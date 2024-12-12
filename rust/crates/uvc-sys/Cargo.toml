@@ -1,0 +1,7 @@
+[package]
+name = "uvc-sys"
+description = "Raw wrapper of libuvc"
+edition = "2021"
+
+[build-dependencies]
+bindgen = "0.64.0"
