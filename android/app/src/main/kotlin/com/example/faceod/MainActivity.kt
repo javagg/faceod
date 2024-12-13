@@ -21,11 +21,11 @@ class MainActivity: FlutterActivity(), MethodCallHandler {
     val arguments = call.arguments<Map<String,Int>>()
     when (call.method) {
       "createTexture" -> {
-        val width = arguments["width"] ?? 300
-        val height = arguments["height"] ?? 300
+        val width = arguments!!["width"] 
+        val height = arguments!!["height"]
         surfaceEntry = textureRegistry.createSurfaceTexture()
         val surfaceTexture = surfaceEntry.surfaceTexture().apply {
-          setDefaultBufferSize(width, height)
+          setDefaultBufferSize(width!!, height!!)
         }
 
   //      externalGLThread = ExternalGLThread(surfaceTexture, SimpleRenderer())
