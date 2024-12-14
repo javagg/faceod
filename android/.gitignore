@@ -10,3 +10,4 @@ key.properties
 **/*.jks
 
 /app/.cxx/
+/**/generated

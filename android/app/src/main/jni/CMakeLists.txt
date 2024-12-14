@@ -53,15 +53,13 @@ target_link_libraries(
   # jpeg
 )
 
-# set(CMAKE_SWIG_FLAGS "")
-
 find_package(SWIG)
 include(UseSWIG)
 set(CMAKE_SWIG_FLAGS -package org.faceod.camera)
 swig_add_library(camera
   LANGUAGE java
   SOURCES libuvc.i
-  OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/org/faceod/camera
+  OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/org/faceod/camera
 )
 
 target_link_libraries(camera uvc)

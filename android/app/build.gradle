@@ -35,6 +35,14 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            java {
+                srcDirs += ['src/main/jni/generated']
+            }
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
