@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+    id 'org.bytedeco.gradle-javacpp-build' version "1.5.10"
 }
 
 android {
@@ -57,6 +58,52 @@ android {
         }
     }
 
+}
+
+dependencies {
+    api "org.bytedeco:javacpp:1.5.10"
+}
+
+android.applicationVariants.all { variant ->
+    def variantName = variant.name.capitalize()
+    def javaCompile = project.tasks.getByName("compile${variantName}JavaWithJavac")
+    def configureCMake = project.tasks.findAll {
+        it.name.startsWith("configureCMake$variantName")
+    }
+
+    task "compileJavaCppConfigFile$variantName"(type: JavaCompile) {
+        include('com/example/faceod/uvc/UvcCameraConfig.java')
+        source(javaCompile.source)
+        destinationDir(javaCompile.destinationDir)
+        classpath = javaCompile.classpath
+    }
+
+    task "parseJavaCppCppHeader$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
+        dependsOn("compileJavaCppConfigFile$variantName")
+        classPath = [javaCompile.destinationDir]
+        includePath = [
+                "$projectDir/src/main/jni/src/libuvc/include",
+                "$projectDir/src/main/jni/include"
+        ]
+        classOrPackageNames = ['com.example.faceod.uvc.UvcCameraConfig'] // produced by last step
+    }
+
+    javaCompile.dependsOn "parseJavaCppCppHeader$variantName"
+
+    // Generates jnijavacpp.cpp and jniNativeLibrary.cpp
+//    task "javacppBuildCompiler$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
+//        dependsOn javaCompile
+//        classPath = [javaCompile.destinationDir]
+//        classOrPackageNames = ['com.example.faceod.uvc.UvcCamera']
+//        compile = false
+//        deleteJniFiles = false
+//        outputDirectory = file("$projectDir/src/main/cpp/")
+//    }
+
+    // Picks up the C++ files listed in CMakeLists.txt
+//    configureCMake.forEach {
+//        it.dependsOn "javacppBuildCompiler$variantName"
+//    }
 }
 
 flutter {

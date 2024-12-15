@@ -2,6 +2,7 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive",
     "files.associations": {
-        "libuvc.h": "c"
+        "libuvc.h": "c",
+        "libuvc_config.h": "c"
     }
 }
