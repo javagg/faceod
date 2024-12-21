@@ -1,21 +1,18 @@
-package com.example.faceod.uvc;
+package com.example.faceod.uvc.presets;
 
 import org.bytedeco.javacpp.annotation.*;
 import org.bytedeco.javacpp.tools.*;
 
-@Properties(
-        value = {
-                @Platform(
-                        include = {"<libuvc/libuvc.h>", }
-//                        link = "z@.1#"
-                ),
-        }
-////        target = "org.example.faceod.uvc",
-////        global = "org.example.faceod.uvc.global.uvc"
-)
-public class UvcCameraConfig implements InfoMapper {
+@Properties(target = "org.example.faceod.uvc", global = "org.example.faceod.uvc.global.uvc", value = {
+    @Platform(include = {"<libusb/libusb.h>", "<libuvc/libuvc.h>"}),
+    @Platform(value = "android", link = "libuvc")
+})
+@NoException
+public class uvc implements InfoMapper {
 
     public void map(InfoMap infoMap) {
+        infoMap.put(new Info("__cplusplus").define());
+
 //        infoMap.put(new Info("ZEXTERN", "ZEXPORT", "z_const", "zlib_version").cppTypes().annotations())
 //                .put(new Info("FAR").cppText("#define FAR"))
 //                .put(new Info("OF").cppText("#define OF(args) args"))

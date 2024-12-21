@@ -71,15 +71,16 @@ android.applicationVariants.all { variant ->
         it.name.startsWith("configureCMake$variantName")
     }
 
-    task "compileJavaCppConfigFile$variantName"(type: JavaCompile) {
+    task "javacpp_CompileConfigFile$variantName"(type: JavaCompile) {
         include('com/example/faceod/uvc/UvcCameraConfig.java')
         source(javaCompile.source)
         destinationDir(javaCompile.destinationDir)
         classpath = javaCompile.classpath
     }
 
-    task "parseJavaCppCppHeader$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
-        dependsOn("compileJavaCppConfigFile$variantName")
+    println(javaCompile.destinationDir)
+    task "javacpp_ParseCppHeader$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
+        dependsOn("javacpp_CompileConfigFile$variantName")
         classPath = [javaCompile.destinationDir]
         includePath = [
                 "$projectDir/src/main/jni/src/libuvc/include",
@@ -88,17 +89,17 @@ android.applicationVariants.all { variant ->
         classOrPackageNames = ['com.example.faceod.uvc.UvcCameraConfig'] // produced by last step
     }
 
-    javaCompile.dependsOn "parseJavaCppCppHeader$variantName"
+    javaCompile.dependsOn "javacpp_ParseCppHeader$variantName"
 
     // Generates jnijavacpp.cpp and jniNativeLibrary.cpp
-//    task "javacppBuildCompiler$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
-//        dependsOn javaCompile
-//        classPath = [javaCompile.destinationDir]
-//        classOrPackageNames = ['com.example.faceod.uvc.UvcCamera']
-//        compile = false
-//        deleteJniFiles = false
-//        outputDirectory = file("$projectDir/src/main/cpp/")
-//    }
+   task "javacpp_BuildCompiler$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
+       dependsOn javaCompile
+       classPath = [javaCompile.destinationDir]
+       classOrPackageNames = ['com.example.faceod.uvc.UvcCamera']
+       compile = false
+       deleteJniFiles = false
+       outputDirectory = file("$projectDir/src/main/cpp/")
+   }
 
     // Picks up the C++ files listed in CMakeLists.txt
 //    configureCMake.forEach {
