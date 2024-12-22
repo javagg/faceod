@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.bytedeco.gradle.javacpp.BuildExtension
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -73,7 +70,6 @@ android {
             destinationDirectory = javaCompile.destinationDirectory
         }
 
-        println(javaCompile.destinationDirectory.get().asFile.path)
         tasks.register<org.bytedeco.gradle.javacpp.BuildTask>("javacpp_ParseCppHeader$variantName") {
             dependsOn("javacpp_CompileConfigFile$variantName")
             classPath = arrayOf(javaCompile.destinationDirectory.get().asFile.path)
@@ -83,14 +79,50 @@ android {
                 "$projectDir/src/main/jni/include"
             )
             classOrPackageNames = arrayOf("com.example.faceod.uvc.presets.uvc") // produced by last step
+            outputDirectory = File("$projectDir/src/main/java/gen")
+
+//            properties
+////            platform
+//
+//             println(properties)
+//
+//            propertyKeysAndValues = Properties().apply {
+//                put("platform.root", "")
+//                put("platform.compiler", "")
+//
+//
+//                "platform.compiler" to ""
+////                'platform.root' : System.getProperty('user.home') + '/Android/Sdk/ndk-bundle/',
+////                'platform.compiler' : "$buildDir/$javacppPlatform/toolchain/bin/clang++".toString() ]
+//
+//            }
         }
 
         javaCompile.dependsOn("javacpp_ParseCppHeader$variantName")
+
+        tasks.register<org.bytedeco.gradle.javacpp.BuildTask>("javacpp_BuildCompiler$variantName")  {
+            dependsOn(javaCompile)
+            classPath = arrayOf(javaCompile.destinationDirectory.get().asFile.path)
+            classOrPackageNames = arrayOf("com.example.faceod.uvc")
+            compile = false
+            deleteJniFiles = false
+//            outputDirectory = File("$projectDir/src/main/cpp/")
+        }
+
     }
 }
 
+javacppBuild {
+}
+
 dependencies {
-    api("org.bytedeco:javacpp:1.5.10")
+    implementation("org.bytedeco:javacpp:1.5.10")
+//    implementation("org.bytedeco:javacpp-platform:1.5.10:android-arm64")
+//    implementation("org.bytedeco:javacpp-platform:1.5.10:android-x86_64")
+//    implementation("org.bytedeco:systems:1.5.10:android-arm64")
+//    implementation("org.bytedeco:systems:1.5.10:android-x86_64")
+//    implementation("org.bytedeco:systems-platform:1.5.10:android-arm64")
+//    implementation("org.bytedeco:systems-platform:1.5.10:android-x86_64")
 }
 
 flutter {
