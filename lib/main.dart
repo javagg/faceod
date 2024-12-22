@@ -156,10 +156,13 @@
 // }
 //
 
+import 'package:faceod/api.dart';
 import 'package:flutter/material.dart';
 import 'package:faceod/src/rust/api/simple.dart';
 import 'package:faceod/src/rust/frb_generated.dart';
 import 'camera.dart';
+
+final AppApi _api = AppApi();
 
 Future<void> main() async {
   await RustLib.init();
@@ -176,10 +179,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(title: const Text('flutter_rust_bridge quickstart')),
         body: Column(
           children: [
-             Container(
-        width:300,
-        height: 300,
-        child: Texture(textureId: 1)),
+            Container(width: 300, height: 300, child: Texture(textureId: 1)),
             Center(
               child: Text(
                   'Action: Call Rust `greet("Tom")`\nResult: `${greet(name: "Tom")}`'),

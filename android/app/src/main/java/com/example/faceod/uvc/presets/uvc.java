@@ -3,9 +3,12 @@ package com.example.faceod.uvc.presets;
 import org.bytedeco.javacpp.annotation.*;
 import org.bytedeco.javacpp.tools.*;
 
-@Properties(target = "org.example.faceod.uvc", global = "org.example.faceod.uvc.global.uvc", value = {
+@Properties(
+//        target = "com.example.faceod.uvc",
+//        global = "com.example.faceod.uvc.global.uvc",
+        value = {
     @Platform(include = {"<libusb/libusb.h>", "<libuvc/libuvc.h>"}),
-    @Platform(value = "android", link = "libuvc")
+//    @Platform(value = "android", link = "libuvc")
 })
 @NoException
 public class uvc implements InfoMapper {

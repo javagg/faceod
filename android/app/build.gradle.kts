@@ -1,9 +1,18 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.bytedeco.gradle.javacpp.BuildExtension
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
     id("org.bytedeco.gradle-javacpp-build") version "1.5.10"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 android {
@@ -17,7 +26,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "17" //JavaVersion.VERSION_17
+        jvmTarget = "17"
     }
 
     defaultConfig {
@@ -31,9 +40,8 @@ android {
         versionName = flutter.versionName
 
         externalNativeBuild {}
-        ndk {
-            abiFilters += listOf("x86_64", "arm64-v8a")
-        }
+        ndk.abiFilters += listOf("x86_64", "arm64-v8a")
+
     }
 
     sourceSets.getByName("main") {
@@ -53,54 +61,37 @@ android {
             path = File("src/main/jni/CMakeLists.txt")
         }
     }
+
+    applicationVariants.all {
+        val variantName = name.capitalize()
+        val javaCompile = tasks.getByName<JavaCompile>("compile${variantName}JavaWithJavac")
+
+        tasks.register<JavaCompile>("javacpp_CompileConfigFile$variantName") {
+            source(javaCompile.source)
+            include("com/example/faceod/uvc/presets/uvc.java")
+            classpath = javaCompile.classpath
+            destinationDirectory = javaCompile.destinationDirectory
+        }
+
+        println(javaCompile.destinationDirectory.get().asFile.path)
+        tasks.register<org.bytedeco.gradle.javacpp.BuildTask>("javacpp_ParseCppHeader$variantName") {
+            dependsOn("javacpp_CompileConfigFile$variantName")
+            classPath = arrayOf(javaCompile.destinationDirectory.get().asFile.path)
+            includePath = arrayOf(
+                "$projectDir/src/main/jni/src/libusb",
+                "$projectDir/src/main/jni/src/libuvc/include",
+                "$projectDir/src/main/jni/include"
+            )
+            classOrPackageNames = arrayOf("com.example.faceod.uvc.presets.uvc") // produced by last step
+        }
+
+        javaCompile.dependsOn("javacpp_ParseCppHeader$variantName")
+    }
 }
 
 dependencies {
     api("org.bytedeco:javacpp:1.5.10")
 }
-
-//android.applicationVariants.all { variant ->
-//    def variantName = variant.name.capitalize()
-//    def javaCompile = project.tasks.getByName("compile${variantName}JavaWithJavac")
-//    def configureCMake = project.tasks.findAll {
-//        it.name.startsWith("configureCMake$variantName")
-//    }
-//
-//    task "javacpp_CompileConfigFile$variantName"(type: JavaCompile) {
-//        include('com/example/faceod/uvc/UvcCameraConfig.java')
-//        source(javaCompile.source)
-//        destinationDir(javaCompile.destinationDir)
-//        classpath = javaCompile.classpath
-//    }
-//
-//    println(javaCompile.destinationDir)
-//    task "javacpp_ParseCppHeader$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
-//        dependsOn("javacpp_CompileConfigFile$variantName")
-//        classPath = [javaCompile.destinationDir]
-//        includePath = [
-//                "$projectDir/src/main/jni/src/libuvc/include",
-//                "$projectDir/src/main/jni/include"
-//        ]
-//        classOrPackageNames = ['com.example.faceod.uvc.UvcCameraConfig'] // produced by last step
-//    }
-//
-//    javaCompile.dependsOn "javacpp_ParseCppHeader$variantName"
-//
-//    // Generates jnijavacpp.cpp and jniNativeLibrary.cpp
-//   task "javacpp_BuildCompiler$variantName"(type: org.bytedeco.gradle.javacpp.BuildTask) {
-//       dependsOn javaCompile
-//       classPath = [javaCompile.destinationDir]
-//       classOrPackageNames = ['com.example.faceod.uvc.UvcCamera']
-//       compile = false
-//       deleteJniFiles = false
-//       outputDirectory = file("$projectDir/src/main/cpp/")
-//   }
-//
-//    // Picks up the C++ files listed in CMakeLists.txt
-////    configureCMake.forEach {
-////        it.dependsOn "javacppBuildCompiler$variantName"
-////    }
-//}
 
 flutter {
     source = "../.."
