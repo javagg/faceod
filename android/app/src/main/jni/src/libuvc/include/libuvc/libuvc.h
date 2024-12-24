@@ -123,11 +123,12 @@ enum uvc_vs_desc_subtype {
   UVC_VS_FORMAT_STREAM_BASED = 0x12
 };
 
-struct uvc_format_desc;
-struct uvc_frame_desc;
+typedef struct uvc_format_desc uvc_format_desc_t;
+typedef struct uvc_frame_desc uvc_frame_desc_t;
 
+typedef struct uvc_still_frame_res uvc_still_frame_res_t;
 typedef struct uvc_still_frame_res {
-  struct uvc_still_frame_res *prev, *next;
+  uvc_still_frame_res_t *prev, *next;
   uint8_t bResolutionIndex;
   /** Image width */
   uint16_t wWidth;
@@ -135,9 +136,10 @@ typedef struct uvc_still_frame_res {
   uint16_t wHeight;
 } uvc_still_frame_res_t;
 
+typedef struct uvc_still_frame_desc uvc_still_frame_desc_t;
 typedef struct uvc_still_frame_desc {
-  struct uvc_format_desc *parent;
-  struct uvc_still_frame_desc *prev, *next;
+  uvc_format_desc_t *parent;
+  uvc_still_frame_desc_t *prev, *next;
   /** Type of frame, such as JPEG frame or uncompressed frme */
   enum uvc_vs_desc_subtype bDescriptorSubtype;
   /** Index of the frame within the list of specs available for this format */
@@ -155,8 +157,8 @@ typedef struct uvc_still_frame_desc {
  * available frame rates.
  */
 typedef struct uvc_frame_desc {
-  struct uvc_format_desc *parent;
-  struct uvc_frame_desc *prev, *next;
+  uvc_frame_desc_t *parent;
+  uvc_frame_desc_t *prev, *next;
   /** Type of frame, such as JPEG frame or uncompressed frme */
   enum uvc_vs_desc_subtype bDescriptorSubtype;
   /** Index of the frame within the list of specs available for this format */
@@ -193,9 +195,12 @@ typedef struct uvc_frame_desc {
  * A "format" determines a stream's image type (e.g., raw YUYV or JPEG)
  * and includes many "frame" configurations.
  */
+typedef struct uvc_format_desc uvc_format_desc_t;
+
+typedef struct uvc_streaming_interface uvc_streaming_interface_t;
 typedef struct uvc_format_desc {
-  struct uvc_streaming_interface *parent;
-  struct uvc_format_desc *prev, *next;
+  uvc_streaming_interface_t *parent;
+  uvc_format_desc_t *prev, *next;
   /** Type of image stream, such as JPEG or uncompressed. */
   enum uvc_vs_desc_subtype bDescriptorSubtype;
   /** Identifier of this format within the VS interface's format list */
@@ -221,8 +226,8 @@ typedef struct uvc_format_desc {
   uint8_t bCopyProtect;
   uint8_t bVariableSize;
   /** Available frame specifications for this format */
-  struct uvc_frame_desc *frame_descs;
-  struct uvc_still_frame_desc *still_frame_desc;
+  uvc_frame_desc_t *frame_descs;
+  uvc_still_frame_desc_t *still_frame_desc;
 } uvc_format_desc_t;
 
 /** UVC request code (A.8) */
@@ -326,14 +331,14 @@ enum uvc_et_type {
  *
  * Always create these with uvc_get_context.
  */
-struct uvc_context;
+//struct uvc_context;
 typedef struct uvc_context uvc_context_t;
 
 /** UVC device.
  *
  * Get this from uvc_get_device_list() or uvc_find_device().
  */
-struct uvc_device;
+//struct uvc_device;
 typedef struct uvc_device uvc_device_t;
 
 /** Handle on an open UVC device.
@@ -341,7 +346,7 @@ typedef struct uvc_device uvc_device_t;
  * Get one of these from uvc_open(). Once you uvc_close()
  * it, it's no longer valid.
  */
-struct uvc_device_handle;
+//struct uvc_device_handle;
 typedef struct uvc_device_handle uvc_device_handle_t;
 
 /** Handle on an open UVC stream.
@@ -349,12 +354,13 @@ typedef struct uvc_device_handle uvc_device_handle_t;
  * Get one of these from uvc_stream_open*().
  * Once you uvc_stream_close() it, it will no longer be valid.
  */
-struct uvc_stream_handle;
+//struct uvc_stream_handle;
 typedef struct uvc_stream_handle uvc_stream_handle_t;
 
 /** Representation of the interface that brings data into the UVC device */
+typedef struct uvc_input_terminal uvc_input_terminal_t;
 typedef struct uvc_input_terminal {
-  struct uvc_input_terminal *prev, *next;
+  uvc_input_terminal_t *prev, *next;
   /** Index of the terminal within the device */
   uint8_t bTerminalID;
   /** Type of terminal (e.g., camera) */
@@ -366,14 +372,16 @@ typedef struct uvc_input_terminal {
   uint64_t bmControls;
 } uvc_input_terminal_t;
 
+typedef struct uvc_output_terminal uvc_output_terminal_t;
 typedef struct uvc_output_terminal {
-  struct uvc_output_terminal *prev, *next;
+  uvc_output_terminal_t *prev, *next;
   /** @todo */
 } uvc_output_terminal_t;
 
 /** Represents post-capture processing functions */
+typedef struct uvc_processing_unit uvc_processing_unit_t;
 typedef struct uvc_processing_unit {
-  struct uvc_processing_unit *prev, *next;
+  uvc_processing_unit_t *prev, *next;
   /** Index of the processing unit within the device */
   uint8_t bUnitID;
   /** Index of the terminal from which the device accepts images */
@@ -383,15 +391,17 @@ typedef struct uvc_processing_unit {
 } uvc_processing_unit_t;
 
 /** Represents selector unit to connect other units */
+typedef struct uvc_selector_unit uvc_selector_unit_t;
 typedef struct uvc_selector_unit {
-  struct uvc_selector_unit *prev, *next;
+  uvc_selector_unit_t *prev, *next;
   /** Index of the selector unit within the device */
   uint8_t bUnitID;
 } uvc_selector_unit_t;
 
 /** Custom processing or camera-control functions */
+typedef struct uvc_extension_unit uvc_extension_unit_t;
 typedef struct uvc_extension_unit {
-  struct uvc_extension_unit *prev, *next;
+  uvc_extension_unit_t *prev, *next;
   /** Index of the extension unit within the device */
   uint8_t bUnitID;
   /** GUID identifying the extension unit */
@@ -490,7 +500,7 @@ typedef struct uvc_frame {
 /** A callback function to handle incoming assembled UVC frames
  * @ingroup streaming
  */
-typedef void(uvc_frame_callback_t)(struct uvc_frame *frame, void *user_ptr);
+typedef void(uvc_frame_callback_t)(uvc_frame_t *frame, void *user_ptr);
 
 /** Streaming mode, includes all information needed to select stream
  * @ingroup streaming

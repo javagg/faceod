@@ -166,17 +166,17 @@ enum uvc_status_type {
 #define UVC_CONTROL_CAP_AUTOUPDATE (1 << 3)
 #define UVC_CONTROL_CAP_ASYNCHRONOUS (1 << 4)
 
-struct uvc_streaming_interface;
-struct uvc_device_info;
+//struct uvc_streaming_interface;
+typedef struct uvc_device_info uvc_device_info_t;
 
 /** VideoStream interface */
 typedef struct uvc_streaming_interface {
-  struct uvc_device_info *parent;
-  struct uvc_streaming_interface *prev, *next;
+  uvc_device_info_t *parent;
+  uvc_streaming_interface_t *prev, *next;
   /** Interface number */
   uint8_t bInterfaceNumber;
   /** Video formats that this interface provides */
-  struct uvc_format_desc *format_descs;
+  uvc_format_desc_t *format_descs;
   /** USB endpoint to use when communicating with this interface */
   uint8_t bEndpointAddress;
   uint8_t bTerminalLink;
@@ -185,12 +185,12 @@ typedef struct uvc_streaming_interface {
 
 /** VideoControl interface */
 typedef struct uvc_control_interface {
-  struct uvc_device_info *parent;
-  struct uvc_input_terminal *input_term_descs;
+  uvc_device_info_t *parent;
+  uvc_input_terminal_t *input_term_descs;
   // struct uvc_output_terminal *output_term_descs;
-  struct uvc_selector_unit *selector_unit_descs;
-  struct uvc_processing_unit *processing_unit_descs;
-  struct uvc_extension_unit *extension_unit_descs;
+  uvc_selector_unit_t *selector_unit_descs;
+  uvc_processing_unit_t *processing_unit_descs;
+  uvc_extension_unit_t *extension_unit_descs;
   uint16_t bcdUVC;
   uint32_t dwClockFrequency;
   uint8_t bEndpointAddress;
@@ -198,13 +198,13 @@ typedef struct uvc_control_interface {
   uint8_t bInterfaceNumber;
 } uvc_control_interface_t;
 
-struct uvc_stream_ctrl;
+typedef struct uvc_stream_ctrl uvc_stream_ctrl_t;
 
-struct uvc_device {
-  struct uvc_context *ctx;
+typedef struct uvc_device {
+  uvc_context_t *ctx;
   int ref;
   libusb_device *usb_dev;
-};
+} uvc_device_t;
 
 typedef struct uvc_device_info {
   /** Configuration descriptor for USB device */
@@ -233,15 +233,15 @@ typedef struct uvc_device_info {
 
 #define LIBUVC_XFER_META_BUF_SIZE ( 4 * 1024 )
 
-struct uvc_stream_handle {
-  struct uvc_device_handle *devh;
-  struct uvc_stream_handle *prev, *next;
-  struct uvc_streaming_interface *stream_if;
+typedef struct uvc_stream_handle {
+  uvc_device_handle_t *devh;
+  uvc_stream_handle_t *prev, *next;
+  uvc_streaming_interface_t *stream_if;
 
   /** if true, stream is running (streaming video to host) */
   uint8_t running;
   /** Current control block */
-  struct uvc_stream_ctrl cur_ctrl;
+  uvc_stream_ctrl_t cur_ctrl;
 
   /* listeners may only access hold*, and only when holding a
    * lock on cb_mutex (probably signaled with cb_cond) */
@@ -259,25 +259,25 @@ struct uvc_stream_handle {
   void *user_ptr;
   struct libusb_transfer *transfers[LIBUVC_NUM_TRANSFER_BUFS];
   uint8_t *transfer_bufs[LIBUVC_NUM_TRANSFER_BUFS];
-  struct uvc_frame frame;
+  uvc_frame_t frame;
   enum uvc_frame_format frame_format;
   struct timespec capture_time_finished;
 
   /* raw metadata buffer if available */
   uint8_t *meta_outbuf, *meta_holdbuf;
   size_t meta_got_bytes, meta_hold_bytes;
-};
+} uvc_stream_handle_t;
 
 /** Handle on an open UVC device
  *
  * @todo move most of this into a uvc_device struct?
  */
-struct uvc_device_handle {
-  struct uvc_device *dev;
-  struct uvc_device_handle *prev, *next;
+typedef struct uvc_device_handle {
+  uvc_device_t *dev;
+  uvc_device_handle_t *prev, *next;
   /** Underlying USB device handle */
   libusb_device_handle *usb_devh;
-  struct uvc_device_info *info;
+  uvc_device_info_t *info;
   struct libusb_transfer *status_xfer;
   uint8_t status_buf[32];
   /** Function to call when we receive status updates from the camera */
@@ -291,10 +291,10 @@ struct uvc_device_handle {
   /** Whether the camera is an iSight that sends one header per frame */
   uint8_t is_isight;
   uint32_t claimed;
-};
+} uvc_device_handle_t;
 
 /** Context within which we communicate with devices */
-struct uvc_context {
+typedef struct uvc_context {
   /** Underlying context for USB communication */
   struct libusb_context *usb_ctx;
   /** True iff libuvc initialized the underlying USB context */
@@ -303,7 +303,7 @@ struct uvc_context {
   uvc_device_handle_t *open_devices;
   pthread_t handler_thread;
   int kill_handler_thread;
-};
+} uvc_context_t;
 
 uvc_error_t uvc_query_stream_ctrl(
     uvc_device_handle_t *devh,
