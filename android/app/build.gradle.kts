@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.tasks.NdkTask
+import org.bytedeco.gradle.javacpp.BuildTask
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -63,15 +66,15 @@ android {
         val variantName = name.capitalize()
         val javaCompile = tasks.getByName<JavaCompile>("compile${variantName}JavaWithJavac")
 
-        tasks.register<JavaCompile>("javacpp_CompileConfigFile$variantName") {
+        tasks.register<JavaCompile>("javacppCompileJava$variantName") {
             source(javaCompile.source)
             include("com/example/faceod/uvc/presets/uvc.java")
             classpath = javaCompile.classpath
             destinationDirectory = javaCompile.destinationDirectory
         }
 
-        tasks.register<org.bytedeco.gradle.javacpp.BuildTask>("javacpp_ParseCppHeader$variantName") {
-            dependsOn("javacpp_CompileConfigFile$variantName")
+        tasks.register<BuildTask>("javacppBuildParser$variantName") {
+            dependsOn("javacppCompileJava$variantName")
             classPath = arrayOf(javaCompile.destinationDirectory.get().asFile.path)
             includePath = arrayOf(
                 "$projectDir/src/main/jni/src/libusb",
@@ -79,50 +82,26 @@ android {
                 "$projectDir/src/main/jni/include"
             )
             classOrPackageNames = arrayOf("com.example.faceod.uvc.presets.uvc") // produced by last step
-            outputDirectory = File("$projectDir/src/main/java/gen")
-
-//            properties
-////            platform
-//
-//             println(properties)
-//
-//            propertyKeysAndValues = Properties().apply {
-//                put("platform.root", "")
-//                put("platform.compiler", "")
-//
-//
-//                "platform.compiler" to ""
-////                'platform.root' : System.getProperty('user.home') + '/Android/Sdk/ndk-bundle/',
-////                'platform.compiler' : "$buildDir/$javacppPlatform/toolchain/bin/clang++".toString() ]
-//
-//            }
+            outputDirectory = File("$projectDir/src/main/jni/generated")
         }
 
-        javaCompile.dependsOn("javacpp_ParseCppHeader$variantName")
+        javaCompile.dependsOn("javacppBuildParser$variantName")
 
-        tasks.register<org.bytedeco.gradle.javacpp.BuildTask>("javacpp_BuildCompiler$variantName")  {
+        tasks.register<BuildTask>("javacppBuildCompiler$variantName") {
             dependsOn(javaCompile)
             classPath = arrayOf(javaCompile.destinationDirectory.get().asFile.path)
-            classOrPackageNames = arrayOf("com.example.faceod.uvc")
+            classOrPackageNames = arrayOf("com.example.faceod.uvc.global.uvc")
             compile = false
             deleteJniFiles = false
-//            outputDirectory = File("$projectDir/src/main/cpp/")
+            outputDirectory = file("$projectDir/src/main/jni/generated")
         }
-
+        // Picks up the C++ files listed in CMakeLists.txt
+        tasks.getByName("externalNativeBuild$variantName").dependsOn("javacppBuildCompiler$variantName")
     }
-}
-
-javacppBuild {
 }
 
 dependencies {
     implementation("org.bytedeco:javacpp:1.5.10")
-//    implementation("org.bytedeco:javacpp-platform:1.5.10:android-arm64")
-//    implementation("org.bytedeco:javacpp-platform:1.5.10:android-x86_64")
-//    implementation("org.bytedeco:systems:1.5.10:android-arm64")
-//    implementation("org.bytedeco:systems:1.5.10:android-x86_64")
-//    implementation("org.bytedeco:systems-platform:1.5.10:android-arm64")
-//    implementation("org.bytedeco:systems-platform:1.5.10:android-x86_64")
 }
 
 flutter {
