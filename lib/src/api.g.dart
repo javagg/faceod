@@ -103,7 +103,7 @@ class AppApi {
   final String pigeonVar_messageChannelSuffix;
 
   Future<String> getHostLanguage() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.faceod.AppApi.getHostLanguage$pigeonVar_messageChannelSuffix';
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.pigeon_example_package.AppApi.getHostLanguage$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -130,7 +130,7 @@ class AppApi {
   }
 
   Future<int> add(int a, int b) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.faceod.AppApi.add$pigeonVar_messageChannelSuffix';
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.pigeon_example_package.AppApi.add$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -157,7 +157,7 @@ class AppApi {
   }
 
   Future<bool> sendMessage(MessageData message) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.faceod.AppApi.sendMessage$pigeonVar_messageChannelSuffix';
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.pigeon_example_package.AppApi.sendMessage$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,

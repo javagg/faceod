@@ -1,29 +1,27 @@
 import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(PigeonOptions(
-  dartOut: 'lib/src/messages.g.dart',
+  dartOut: 'lib/src/api.g.dart',
   dartOptions: DartOptions(),
-  cppOptions: CppOptions(namespace: 'pigeon_example'),
-  cppHeaderOut: 'windows/runner/messages.g.h',
-  cppSourceOut: 'windows/runner/messages.g.cpp',
-  gobjectHeaderOut: 'linux/messages.g.h',
-  gobjectSourceOut: 'linux/messages.g.cc',
-  gobjectOptions: GObjectOptions(),
-  kotlinOut:
-      'android/app/src/main/kotlin/dev/flutter/pigeon_example_app/Messages.g.kt',
+  // cppOptions: CppOptions(namespace: 'pigeon_example'),
+  // cppHeaderOut: 'windows/runner/messages.g.h',
+  // cppSourceOut: 'windows/runner/messages.g.cpp',
+  // gobjectHeaderOut: 'linux/messages.g.h',
+  // gobjectSourceOut: 'linux/messages.g.cc',
+  // gobjectOptions: GObjectOptions(),
+  kotlinOut: 'android/app/src/main/java/org/faceod/platform/AppApi.g.kt',
   kotlinOptions: KotlinOptions(),
-  javaOut: 'android/app/src/main/java/io/flutter/plugins/Messages.java',
-  javaOptions: JavaOptions(),
-  swiftOut: 'ios/Runner/Messages.g.swift',
-  swiftOptions: SwiftOptions(),
-  objcHeaderOut: 'macos/Runner/messages.g.h',
-  objcSourceOut: 'macos/Runner/messages.g.m',
+  // javaOut: 'android/app/src/main/java/io/flutter/plugins/Messages.java',
+  // javaOptions: JavaOptions(),
+  // swiftOut: 'ios/Runner/Messages.g.swift',
+  // swiftOptions: SwiftOptions(),
+  // objcHeaderOut: 'macos/Runner/messages.g.h',
+  // objcSourceOut: 'macos/Runner/messages.g.m',
   // Set this to a unique prefix for your plugin or application, per Objective-C naming conventions.
-  objcOptions: ObjcOptions(prefix: 'PGN'),
-  copyrightHeader: 'pigeons/copyright.txt',
+  // objcOptions: ObjcOptions(prefix: 'PGN'),
+  // copyrightHeader: 'pigeons/copyright.txt',
   dartPackageName: 'pigeon_example_package',
 ))
-
 enum Code { one, two }
 
 class MessageData {

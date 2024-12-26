@@ -6,7 +6,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.view.TextureRegistry
-//import org.faceod.camera.uvc_error_t
 
 class MainActivity: FlutterActivity(), MethodCallHandler {
 
