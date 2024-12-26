@@ -1,5 +1,6 @@
 import com.android.build.gradle.internal.tasks.NdkTask
 import org.bytedeco.gradle.javacpp.BuildTask
+import org.jetbrains.kotlin.konan.properties.Properties
 
 plugins {
     id("com.android.application")
@@ -77,7 +78,6 @@ android {
             dependsOn("javacppCompileJava$variantName")
             classPath = arrayOf(javaCompile.destinationDirectory.get().asFile.path)
             includePath = arrayOf(
-                "$projectDir/src/main/jni/src/libusb",
                 "$projectDir/src/main/jni/src/libuvc/include",
                 "$projectDir/src/main/jni/include"
             )
@@ -91,9 +91,13 @@ android {
             dependsOn(javaCompile)
             classPath = arrayOf(javaCompile.destinationDirectory.get().asFile.path)
             classOrPackageNames = arrayOf("com.example.faceod.uvc.global.uvc")
+            includePath = arrayOf(
+                "$projectDir/src/main/jni/src/libusb/libusb",
+            )
             compile = false
             deleteJniFiles = false
             outputDirectory = file("$projectDir/src/main/jni/generated")
+            properties = "android"
         }
         // Picks up the C++ files listed in CMakeLists.txt
         tasks.getByName("externalNativeBuild$variantName").dependsOn("javacppBuildCompiler$variantName")

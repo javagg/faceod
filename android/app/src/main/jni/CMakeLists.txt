@@ -41,6 +41,8 @@ set(LIBUVC_SRCS
   ${LIBUVC_ROOT}/src/misc.c
 )
 
+set(JNI_SRCS generated/jnijavacpp.cpp generated/jniuvc.cpp)
+
 ExternalProject_Get_property(JPEG SOURCE_DIR)
 ExternalProject_Get_property(JPEG BINARY_DIR)
 link_directories(${BINARY_DIR})
@@ -53,13 +55,14 @@ target_link_libraries(
   # jpeg
 )
 
-find_package(SWIG)
-include(UseSWIG)
-set(CMAKE_SWIG_FLAGS -package org.faceod.camera)
-swig_add_library(camera
-  LANGUAGE java
-  SOURCES libuvc.i
-  OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/org/faceod/camera
-)
-
+#find_package(SWIG)
+#include(UseSWIG)
+#set(CMAKE_SWIG_FLAGS -package org.faceod.camera)
+#swig_add_library(camera
+#  LANGUAGE java
+#  SOURCES libuvc.i
+#  OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/org/faceod/camera
+#)
+add_library(camera SHARED ${JNI_SRCS})
+set_target_properties(camera PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(camera uvc)

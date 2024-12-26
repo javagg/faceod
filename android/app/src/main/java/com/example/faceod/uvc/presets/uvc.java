@@ -11,7 +11,7 @@ import org.bytedeco.javacpp.Pointer;
         target = "com.example.faceod.uvc",
         global = "com.example.faceod.uvc.global.uvc",
         value = {
-    @Platform(include = {"libuvc/libuvc.h", "libuvc/libuvc_internal.h"}, link = "uvc"),
+    @Platform(include = {"<libuvc/libuvc.h>", "<libuvc/libuvc_internal.h>"}, link = "uvc"),
     @Platform(value = "android", link = "uvc"
     )
 })
